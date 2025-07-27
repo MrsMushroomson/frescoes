@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Audio Guide - Museum</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      background: #2e004f;
+      color: #ffd700;
+      font-family: 'Montserrat', 'Segoe UI', 'Arial', sans-serif;
+    }
+    .container {
+      max-width: 700px;
+      margin: 0 auto;
+      padding: 2rem;
+      text-align: center;
+    }
+    h1 {
+      font-size: 2rem;
+      font-weight: 600;
+      margin-bottom: 2rem;
+    }
+    .back-btn {
+      position: absolute;
+      top: 2rem;
+      left: 2rem;
+      background: #ffd700;
+      color: #2e004f;
+      border: none;
+      padding: 0.7rem 1.5rem;
+      border-radius: 0.7rem;
+      font-size: 1rem;
+      font-family: 'Montserrat', 'Segoe UI', 'Arial', sans-serif;
+      cursor: pointer;
+      z-index: 10;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.10);
+    }
+    .back-btn:hover { background: #fff8dc; color: #1a0033; }
+  </style>
+</head>
+<body>
+  <button class="back-btn" onclick="location.href='index.html'">Back</button>
+  <div class="container">
+    <h1>Audio Guide</h1>
+    <p>
+      Select an artwork to listen to its audio guide. <br>
+      (Coming soon)
+    </p>
+    <!-- You can add a list of artworks and audio controls here -->
+  </div>
+</body>
+</html>

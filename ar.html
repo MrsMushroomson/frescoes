@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AR Experience - Museum</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- MindAR and A-Frame libraries -->
+  <script src="https://unpkg.com/aframe@1.5.0/dist/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.3/dist/mindar-image-aframe.prod.js"></script>
+  <style>
+    html, body { margin: 0; padding: 0; height: 100%; background: #2e004f; }
+    #ar-container { width: 100vw; height: 100vh; position: relative; }
+    #label {
+      position: absolute;
+      top: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 2rem;
+      color: #ffd700;
+      background: rgba(46,0,79,0.85);
+      padding: 0.7rem 2rem;
+      border-radius: 1rem;
+      font-family: 'Montserrat', 'Segoe UI', 'Arial', sans-serif;
+      box-shadow: 0 2px 16px rgba(0,0,0,0.13);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s;
+      z-index: 10;
+    }
+    #back-btn {
+      position: absolute;
+      top: 2rem;
+      left: 2rem;
+      background: #ffd700;
+      color: #2e004f;
+      border: none;
+      padding: 0.7rem 1.5rem;
+      border-radius: 0.7rem;
+      font-size: 1rem;
+      font-family: 'Montserrat', 'Segoe UI', 'Arial', sans-serif;
+      cursor: pointer;
+      z-index: 10;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.10);
+    }
+    #back-btn:hover { background: #fff8dc; color: #1a0033; }
+  </style>
+</head>
+<body>
+  <div id="ar-container">
+    <div id="label"></div>
+    <button id="back-btn" onclick="location.href='index.html'">Back</button>
+    <a-scene
+      mindar-image="imageTargetSrc: targets.mind; autoStart: true;"
+      color-space="sRGB"
+      embedded
+      renderer="colorManagement: true, physicallyCorrectLights"
+      vr-mode-ui="enabled: false"
+      device-orientation-permission-ui="enabled: true"
+      style="width: 100vw; height: 100vh; position: absolute; top: 0; left: 0;"
+    >
+      <a-assets>
+        <!-- Load your AR image overlays or 3D models here if needed -->
+      </a-assets>
+
+      <!-- Example for 1 image target - repeat for all targets with unique index -->
+      <a-entity mindar-image-target="targetIndex: 0">
+        <!-- This can be any 3D or 2D overlay, for now it's just a hidden box for detection -->
+        <a-box visible="false"></a-box>
+      </a-entity>
+      <!-- Repeat <a-entity mindar-image-target="targetIndex: X"> for each image -->
+    </a-scene>
+  </div>
+  <script>
+    // Replace with your image labels, index corresponds to targetIndex in MindAR
+    const labels = [
+      "Mona Lisa",
+      "Starry Night",
+      "The Scream",
+      // ... up to your 30 labels
+    ];
+
+    const labelEl = document.getElementById('label');
+    // Listen for MindAR events to show the label
+    document.querySelector('a-scene').addEventListener('targetFound', (event) => {
+      // Get the target index (from event.detail.targetIndex)
+      const idx = event.detail.targetIndex;
+      if (labels[idx]) {
+        labelEl.textContent = labels[idx];
+        labelEl.style.opacity = 1;
+      }
+    });
+    document.querySelector('a-scene').addEventListener('targetLost', () => {
+      labelEl.style.opacity = 0;
+    });
+  </script>
+</body>
+</html>
