@@ -10,6 +10,35 @@
   <style>
     html, body { margin: 0; padding: 0; height: 100%; background: #2e004f; }
     #ar-container { width: 100vw; height: 100vh; position: relative; }
+    
+    /* Loading indicator */
+    #loading {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: #ffd700;
+      font-size: 1.5rem;
+      font-family: 'Montserrat', 'Segoe UI', 'Arial', sans-serif;
+      text-align: center;
+      z-index: 20;
+    }
+    
+    .spinner {
+      border: 4px solid rgba(255, 215, 0, 0.3);
+      border-top: 4px solid #ffd700;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 1rem;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
     #label {
       position: absolute;
       top: 2rem;
@@ -47,10 +76,17 @@
 </head>
 <body>
   <div id="ar-container">
+    <div id="loading">
+      <div class="spinner"></div>
+      <div>Loading AR Experience...</div>
+      <div style="font-size: 1rem; margin-top: 1rem;">
+        Make sure to allow camera access
+      </div>
+    </div>
     <div id="label"></div>
     <button id="back-btn" onclick="location.href='index.html'">Back</button>
     <a-scene
-      mindar-image="imageTargetSrc: targets.mind; autoStart: true;"
+      mindar-image="imageTargetSrc: targets.mind; autoStart: false; maxTrack: 1;"
       color-space="sRGB"
       embedded
       renderer="colorManagement: true, physicallyCorrectLights"
@@ -80,18 +116,79 @@
     ];
 
     const labelEl = document.getElementById('label');
+    const loadingEl = document.getElementById('loading');
+    let arSystem = null;
+
+    // Wait for the scene to be ready
+    document.querySelector('a-scene').addEventListener('loaded', () => {
+      console.log('A-Frame scene loaded');
+      initializeAR();
+    });
+
+    function initializeAR() {
+      arSystem = document.querySelector('a-scene').systems['mindar-image-system'];
+      
+      if (arSystem) {
+        console.log('MindAR system found, starting AR...');
+        
+        // Start AR tracking
+        arSystem.start().then(() => {
+          console.log('AR started successfully');
+          loadingEl.style.display = 'none';
+        }).catch((error) => {
+          console.error('Error starting AR:', error);
+          loadingEl.innerHTML = `
+            <div style="color: #ff6b6b;">
+              <div>AR Failed to Start</div>
+              <div style="font-size: 1rem; margin-top: 1rem;">
+                ${error.message || 'Unknown error'}
+              </div>
+              <div style="font-size: 0.9rem; margin-top: 1rem;">
+                Please check:
+                <br>• Camera permissions are granted
+                <br>• targets.mind file exists
+                <br>• Using HTTPS or localhost
+              </div>
+            </div>
+          `;
+        });
+      } else {
+        console.error('MindAR system not found');
+        setTimeout(initializeAR, 1000); // Retry after 1 second
+      }
+    }
+
     // Listen for MindAR events to show the label
     document.querySelector('a-scene').addEventListener('targetFound', (event) => {
-      // Get the target index (from event.detail.targetIndex)
+      console.log('Target found:', event.detail.targetIndex);
       const idx = event.detail.targetIndex;
       if (labels[idx]) {
         labelEl.textContent = labels[idx];
         labelEl.style.opacity = 1;
       }
     });
+    
     document.querySelector('a-scene').addEventListener('targetLost', () => {
+      console.log('Target lost');
       labelEl.style.opacity = 0;
     });
+
+    // Handle camera permission
+    navigator.mediaDevices.getUserMedia({ video: true })
+      .then(() => {
+        console.log('Camera permission granted');
+      })
+      .catch((error) => {
+        console.error('Camera permission denied:', error);
+        loadingEl.innerHTML = `
+          <div style="color: #ff6b6b;">
+            <div>Camera Access Required</div>
+            <div style="font-size: 1rem; margin-top: 1rem;">
+              Please allow camera access and refresh the page
+            </div>
+          </div>
+        `;
+      });
   </script>
 </body>
 </html>
