@@ -5,7 +5,7 @@
   <title>AR Experience - Museum</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <!-- MindAR and A-Frame libraries -->
-  <script src="https://unpkg.com/aframe@1.5.0/dist/aframe.min.js"></script>
+  <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.3/dist/mindar-image-aframe.prod.js"></script>
   <style>
     html, body { margin: 0; padding: 0; height: 100%; background: #2e004f; }
@@ -86,23 +86,24 @@
     <div id="label"></div>
     <button id="back-btn" onclick="location.href='index.html'">Back</button>
     <a-scene
-      mindar-image="imageTargetSrc: targets.mind; autoStart: false; maxTrack: 1;"
+      id="ar-scene"
+      mindar-image="imageTargetSrc: targets.mind; autoStart: true;"
       color-space="sRGB"
       embedded
       renderer="colorManagement: true, physicallyCorrectLights"
       vr-mode-ui="enabled: false"
-      device-orientation-permission-ui="enabled: true"
-      style="width: 100vw; height: 100vh; position: absolute; top: 0; left: 0;"
+      device-orientation-permission-ui="enabled: false"
+      style="width: 100vw; height: 100vh; position: fixed; top: 0; left: 0; z-index: 5;"
     >
       <a-assets>
-        <a-asset-item id="museumModel" src="https://cdn.aframe.io/models/json/duck.json"></a-asset-item>
+        <!-- Remove problematic assets for now -->
       </a-assets>
 
-      <!-- AR target with 3D content -->
+      <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+      
+      <!-- Simplified AR target with just text -->
       <a-entity mindar-image-target="targetIndex: 0">
-        <a-plane position="0 0 0" height="0.552" width="1" rotation="-90 0 0" opacity="0.5" src="#card"></a-plane>
-        <a-gltf-model rotation="0 0 0 " position="0 0 0.1" scale="0.005 0.005 0.005" src="#museumModel" animation="property: rotation; to: 0 360 0; loop: true; dur: 10000"></a-gltf-model>
-        <a-text value="Museum Artifact" position="0 0.3 0" color="#ffd700" align="center" scale="2 2 2"></a-text>
+        <a-text value="Museum Artifact Detected!" color="#FFD700" align="center" position="0 0 0" scale="0.5 0.5 0.5"></a-text>
       </a-entity>
     </a-scene>
   </div>
@@ -117,46 +118,15 @@
 
     const labelEl = document.getElementById('label');
     const loadingEl = document.getElementById('loading');
-    let arSystem = null;
 
-    // Wait for the scene to be ready
+    // Simplified initialization - let MindAR handle everything with autoStart
     document.querySelector('a-scene').addEventListener('loaded', () => {
       console.log('A-Frame scene loaded');
-      initializeAR();
+      // Hide loading after a short delay to let MindAR initialize
+      setTimeout(() => {
+        loadingEl.style.display = 'none';
+      }, 3000);
     });
-
-    function initializeAR() {
-      arSystem = document.querySelector('a-scene').systems['mindar-image-system'];
-      
-      if (arSystem) {
-        console.log('MindAR system found, starting AR...');
-        
-        // Start AR tracking
-        arSystem.start().then(() => {
-          console.log('AR started successfully');
-          loadingEl.style.display = 'none';
-        }).catch((error) => {
-          console.error('Error starting AR:', error);
-          loadingEl.innerHTML = `
-            <div style="color: #ff6b6b;">
-              <div>AR Failed to Start</div>
-              <div style="font-size: 1rem; margin-top: 1rem;">
-                ${error.message || 'Unknown error'}
-              </div>
-              <div style="font-size: 0.9rem; margin-top: 1rem;">
-                Please check:
-                <br>• Camera permissions are granted
-                <br>• targets.mind file exists
-                <br>• Using HTTPS or localhost
-              </div>
-            </div>
-          `;
-        });
-      } else {
-        console.error('MindAR system not found');
-        setTimeout(initializeAR, 1000); // Retry after 1 second
-      }
-    }
 
     // Listen for MindAR events to show the label
     document.querySelector('a-scene').addEventListener('targetFound', (event) => {
@@ -172,23 +142,6 @@
       console.log('Target lost');
       labelEl.style.opacity = 0;
     });
-
-    // Handle camera permission
-    navigator.mediaDevices.getUserMedia({ video: true })
-      .then(() => {
-        console.log('Camera permission granted');
-      })
-      .catch((error) => {
-        console.error('Camera permission denied:', error);
-        loadingEl.innerHTML = `
-          <div style="color: #ff6b6b;">
-            <div>Camera Access Required</div>
-            <div style="font-size: 1rem; margin-top: 1rem;">
-              Please allow camera access and refresh the page
-            </div>
-          </div>
-        `;
-      });
   </script>
 </body>
 </html>
