@@ -8,8 +8,19 @@
   <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.3/dist/mindar-image-aframe.prod.js"></script>
   <style>
-    html, body { margin: 0; padding: 0; height: 100%; background: #2e004f; }
-    #ar-container { width: 100vw; height: 100vh; position: relative; }
+    html, body { 
+      margin: 0; 
+      padding: 0; 
+      height: 100%; 
+      background: transparent; /* Remove dark background for AR */
+      overflow: hidden;
+    }
+    #ar-container { 
+      width: 100vw; 
+      height: 100vh; 
+      position: relative; 
+      background: transparent; /* Ensure container is transparent */
+    }
     
     /* Loading indicator */
     #loading {
@@ -46,21 +57,21 @@
       transform: translateX(-50%);
       font-size: 2rem;
       color: #ffd700;
-      background: rgba(46,0,79,0.85);
+      background: rgba(0,0,0,0.7); /* Dark semi-transparent background */
       padding: 0.7rem 2rem;
       border-radius: 1rem;
       font-family: 'Montserrat', 'Segoe UI', 'Arial', sans-serif;
-      box-shadow: 0 2px 16px rgba(0,0,0,0.13);
+      box-shadow: 0 2px 16px rgba(0,0,0,0.3);
       opacity: 0;
       pointer-events: none;
       transition: opacity 0.3s;
-      z-index: 10;
+      z-index: 15; /* Higher z-index to appear above AR */
     }
     #back-btn {
       position: absolute;
       top: 2rem;
       left: 2rem;
-      background: #ffd700;
+      background: rgba(255, 215, 0, 0.9); /* Semi-transparent */
       color: #2e004f;
       border: none;
       padding: 0.7rem 1.5rem;
@@ -68,10 +79,13 @@
       font-size: 1rem;
       font-family: 'Montserrat', 'Segoe UI', 'Arial', sans-serif;
       cursor: pointer;
-      z-index: 10;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.10);
+      z-index: 15; /* Higher z-index to appear above AR */
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
     }
-    #back-btn:hover { background: #fff8dc; color: #1a0033; }
+    #back-btn:hover { 
+      background: rgba(255, 248, 220, 0.9); 
+      color: #1a0033; 
+    }
   </style>
 </head>
 <body>
