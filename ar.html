@@ -59,15 +59,15 @@
       style="width: 100vw; height: 100vh; position: absolute; top: 0; left: 0;"
     >
       <a-assets>
-        <!-- Load your AR image overlays or 3D models here if needed -->
+        <a-asset-item id="museumModel" src="https://cdn.aframe.io/models/json/duck.json"></a-asset-item>
       </a-assets>
 
-      <!-- Example for 1 image target - repeat for all targets with unique index -->
+      <!-- AR target with 3D content -->
       <a-entity mindar-image-target="targetIndex: 0">
-        <!-- This can be any 3D or 2D overlay, for now it's just a hidden box for detection -->
-        <a-box visible="false"></a-box>
+        <a-plane position="0 0 0" height="0.552" width="1" rotation="-90 0 0" opacity="0.5" src="#card"></a-plane>
+        <a-gltf-model rotation="0 0 0 " position="0 0 0.1" scale="0.005 0.005 0.005" src="#museumModel" animation="property: rotation; to: 0 360 0; loop: true; dur: 10000"></a-gltf-model>
+        <a-text value="Museum Artifact" position="0 0.3 0" color="#ffd700" align="center" scale="2 2 2"></a-text>
       </a-entity>
-      <!-- Repeat <a-entity mindar-image-target="targetIndex: X"> for each image -->
     </a-scene>
   </div>
   <script>
