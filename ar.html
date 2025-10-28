@@ -112,6 +112,62 @@
       background: rgba(255, 248, 220, 0.9); 
       color: #1a0033; 
     }
+    
+    #room-selector {
+      position: absolute;
+      top: 2rem;
+      right: 2rem;
+      background: rgba(255, 215, 0, 0.9);
+      color: #2e004f;
+      border: none;
+      padding: 0.7rem 1rem;
+      border-radius: 0.7rem;
+      font-size: 1rem;
+      font-family: 'Montserrat', 'Segoe UI', 'Arial', sans-serif;
+      cursor: pointer;
+      z-index: 15;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+      min-width: 150px;
+    }
+    #room-selector:hover {
+      background: rgba(255, 248, 220, 0.9);
+      color: #1a0033;
+    }
+
+    #language-selector {
+      position: absolute;
+      top: 5rem;
+      right: 2rem;
+      background: rgba(255, 215, 0, 0.9);
+      color: #2e004f;
+      border: none;
+      padding: 0.7rem 1rem;
+      border-radius: 0.7rem;
+      font-size: 1rem;
+      font-family: 'Montserrat', 'Segoe UI', 'Arial', sans-serif;
+      cursor: pointer;
+      z-index: 15;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    }
+    #language-selector:hover {
+      background: rgba(255, 248, 220, 0.9);
+      color: #1a0033;
+    }
+
+    #room-status {
+      position: absolute;
+      top: 8rem;
+      right: 2rem;
+      background: rgba(0, 0, 0, 0.7);
+      color: #ffffff;
+      padding: 0.5rem 1rem;
+      border-radius: 0.5rem;
+      font-size: 0.9rem;
+      font-family: 'Montserrat', 'Segoe UI', 'Arial', sans-serif;
+      z-index: 15;
+      max-width: 200px;
+      text-align: center;
+    }
   </style>
 </head>
 <body>
@@ -125,9 +181,17 @@
     </div>
     <div id="label"></div>
     <button id="back-btn" onclick="location.href='index.html'">Back</button>
+    <select id="room-selector">
+      <option value="">Select Room...</option>
+    </select>
+    <select id="language-selector">
+      <option value="en">English</option>
+      <option value="it">Italiano</option>
+    </select>
+    <div id="room-status">Select a room to start AR</div>
     <a-scene
       id="ar-scene"
-      mindar-image="imageTargetSrc: targets.mind; autoStart: true;"
+      mindar-image="autoStart: false;"
       color-space="sRGB"
       embedded
       renderer="colorManagement: true, physicallyCorrectLights"
@@ -141,46 +205,229 @@
 
       <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
       
-      <!-- Simplified AR target with just text -->
-      <a-entity mindar-image-target="targetIndex: 0">
-        <a-text value="Mosè domanda al Faraone il permesso di lasciare l'Egitto con gli ebrei" color="#FFFFFF" align="center" position="0 0 0" scale="0.5 0.5 0.5" look-at="[camera]"></a-text>
-      </a-entity>
+      <!-- AR targets will be dynamically created -->
+      <a-entity id="ar-targets"></a-entity>
     </a-scene>
   </div>
   <script>
-    // Replace with your image labels, index corresponds to targetIndex in MindAR
-    const labels = [
-      "Mosè domanda al Faraone il permesso di lasciare l'Egitto con gli ebrei",
-      "Starry Night",
-      "The Scream",
-      // ... up to your 30 labels
-    ];
-
+    let museumData = null;
+    let currentRoom = null;
+    let currentLanguage = 'it'; // Default to Italian
+    let mindARSystem = null;
+    let isARActive = false;
+    
     const labelEl = document.getElementById('label');
     const loadingEl = document.getElementById('loading');
+    const languageSelector = document.getElementById('language-selector');
+    const roomSelector = document.getElementById('room-selector');
+    const roomStatus = document.getElementById('room-status');
+    const sceneEl = document.querySelector('a-scene');
 
-    // Simplified initialization - let MindAR handle everything with autoStart
-    document.querySelector('a-scene').addEventListener('loaded', () => {
-      console.log('A-Frame scene loaded');
-      // Hide loading after a short delay to let MindAR initialize
-      setTimeout(() => {
+    // Load museum data from JSON file
+    async function loadMuseumData() {
+      try {
+        const response = await fetch('frescos.json');
+        museumData = await response.json();
+        console.log('Museum data loaded:', museumData);
+        populateRoomSelector();
+      } catch (error) {
+        console.error('Error loading museum data:', error);
+        roomStatus.textContent = 'Error loading room data';
+      }
+    }
+
+    // Populate room selector dropdown
+    function populateRoomSelector() {
+      roomSelector.innerHTML = '<option value="">Select Room...</option>';
+      
+      museumData.rooms.forEach(room => {
+        const option = document.createElement('option');
+        option.value = room.id;
+        option.textContent = room.name[currentLanguage];
+        roomSelector.appendChild(option);
+      });
+    }
+
+    // Get current room data
+    function getCurrentRoomData() {
+      if (!currentRoom || !museumData) return null;
+      return museumData.rooms.find(room => room.id === currentRoom);
+    }
+
+    // Create AR target entities dynamically based on current room
+    function createARTargets() {
+      const targetsContainer = document.getElementById('ar-targets');
+      
+      // Clear existing targets
+      while (targetsContainer.firstChild) {
+        targetsContainer.removeChild(targetsContainer.firstChild);
+      }
+      
+      const roomData = getCurrentRoomData();
+      if (!roomData) return;
+      
+      roomData.frescoes.forEach((fresco, index) => {
+        const targetEntity = document.createElement('a-entity');
+        targetEntity.setAttribute('mindar-image-target', `targetIndex: ${fresco.targetIndex}`);
+        
+        // Create text element for AR overlay
+        const textEntity = document.createElement('a-text');
+        textEntity.setAttribute('value', fresco.title[currentLanguage]);
+        textEntity.setAttribute('color', '#FFFFFF');
+        textEntity.setAttribute('align', 'center');
+        textEntity.setAttribute('position', '0 0 0');
+        textEntity.setAttribute('scale', '0.5 0.5 0.5');
+        textEntity.setAttribute('look-at', '[camera]');
+        
+        targetEntity.appendChild(textEntity);
+        targetsContainer.appendChild(targetEntity);
+      });
+    }
+
+    // Get title for a specific target index in current room
+    function getTitleForTarget(targetIndex) {
+      const roomData = getCurrentRoomData();
+      if (!roomData) return null;
+      
+      const fresco = roomData.frescoes.find(f => f.targetIndex === targetIndex);
+      return fresco ? fresco.title[currentLanguage] : null;
+    }
+
+    // Start AR for selected room
+    async function startARForRoom(roomId) {
+      if (!museumData) return;
+      
+      const roomData = museumData.rooms.find(room => room.id === roomId);
+      if (!roomData) return;
+      
+      try {
+        loadingEl.style.display = 'block';
+        roomStatus.textContent = `Loading ${roomData.name[currentLanguage]}...`;
+        
+        // Stop current AR if running
+        if (isARActive && mindARSystem) {
+          await mindARSystem.stop();
+          isARActive = false;
+        }
+        
+        currentRoom = roomId;
+        
+        // Update MindAR system with new target file
+        sceneEl.setAttribute('mindar-image', `imageTargetSrc: ${roomData.targetFile}; autoStart: false;`);
+        
+        // Create new AR targets
+        createARTargets();
+        
+        // Initialize MindAR system
+        mindARSystem = sceneEl.systems['mindar-image-system'];
+        
+        // Start AR
+        await mindARSystem.start();
+        isARActive = true;
+        
         loadingEl.style.display = 'none';
-      }, 3000);
+        roomStatus.textContent = `AR Active: ${roomData.name[currentLanguage]}`;
+        
+        console.log(`AR started for room: ${roomData.name[currentLanguage]}`);
+        
+      } catch (error) {
+        console.error('Error starting AR:', error);
+        loadingEl.style.display = 'none';
+        roomStatus.textContent = 'Error starting AR';
+      }
+    }
+
+    // Handle room selection
+    roomSelector.addEventListener('change', async (event) => {
+      const selectedRoom = event.target.value;
+      
+      if (selectedRoom) {
+        await startARForRoom(selectedRoom);
+      } else {
+        // Stop AR if no room selected
+        if (isARActive && mindARSystem) {
+          await mindARSystem.stop();
+          isARActive = false;
+        }
+        currentRoom = null;
+        roomStatus.textContent = 'Select a room to start AR';
+      }
+    });
+
+    // Handle language change
+    languageSelector.addEventListener('change', (event) => {
+      currentLanguage = event.target.value;
+      console.log('Language changed to:', currentLanguage);
+      
+      // Update room selector options
+      if (museumData) {
+        populateRoomSelector();
+        if (currentRoom) {
+          roomSelector.value = currentRoom;
+        }
+      }
+      
+      // Update room status
+      if (currentRoom) {
+        const roomData = getCurrentRoomData();
+        if (roomData) {
+          roomStatus.textContent = `AR Active: ${roomData.name[currentLanguage]}`;
+        }
+      }
+      
+      // Update AR text entities
+      const textEntities = document.querySelectorAll('a-text');
+      const roomData = getCurrentRoomData();
+      if (roomData) {
+        textEntities.forEach((textEntity, index) => {
+          if (roomData.frescoes[index]) {
+            textEntity.setAttribute('value', roomData.frescoes[index].title[currentLanguage]);
+          }
+        });
+      }
+      
+      // Update label if currently showing
+      if (labelEl.style.opacity == 1) {
+        const currentTargetIndex = parseInt(labelEl.dataset.targetIndex);
+        if (currentTargetIndex !== undefined) {
+          const title = getTitleForTarget(currentTargetIndex);
+          if (title) {
+            labelEl.textContent = title;
+          }
+        }
+      }
+    });
+
+    // Initialize the application
+    document.addEventListener('DOMContentLoaded', () => {
+      loadMuseumData();
+      
+      // Set default language
+      languageSelector.value = currentLanguage;
+    });
+
+    // A-Frame scene loaded
+    sceneEl.addEventListener('loaded', () => {
+      console.log('A-Frame scene loaded');
     });
 
     // Listen for MindAR events to show the label
-    document.querySelector('a-scene').addEventListener('targetFound', (event) => {
+    sceneEl.addEventListener('targetFound', (event) => {
       console.log('Target found:', event.detail.targetIndex);
-      const idx = event.detail.targetIndex;
-      if (labels[idx]) {
-        labelEl.textContent = labels[idx];
+      const targetIndex = event.detail.targetIndex;
+      const title = getTitleForTarget(targetIndex);
+      
+      if (title) {
+        labelEl.textContent = title;
+        labelEl.dataset.targetIndex = targetIndex; // Store current target index
         labelEl.style.opacity = 1;
       }
     });
     
-    document.querySelector('a-scene').addEventListener('targetLost', () => {
+    sceneEl.addEventListener('targetLost', () => {
       console.log('Target lost');
       labelEl.style.opacity = 0;
+      delete labelEl.dataset.targetIndex; // Clear target index
     });
   </script>
 </body>

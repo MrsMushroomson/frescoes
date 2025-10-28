@@ -1,0 +1,218 @@
+{
+    "rooms": [
+        {
+            "id": "moses",
+            "name": {
+                "en": "Moses Cycle",
+                "it": "Ciclo di Mosè"
+            },
+            "targetFile": "targets.mind",
+            "frescoes": [
+                {
+                    "targetName": "fresco_001.mind",
+                    "targetIndex": 0,
+                    "title": {
+                        "en": "The Pharaoh's Daughter Delivers Moses to the Wet-Nurse",
+                        "it": "La figlia del Faraone consegna Mose alla nutrice"
+                    }
+                },
+                {
+                    "targetName": "fresco_002.mind",
+                    "targetIndex": 1,
+                    "title": {
+                        "en": "The Test of the Burning Coals",
+                        "it": "La prova dei carboni ardenti"
+                    }
+                },
+                {
+                    "targetName": "fresco_003.mind",
+                    "targetIndex": 2,
+                    "title": {
+                        "en": "Moses Asks Pharaoh for Permission to Leave Egypt with the Jewish people",
+                        "it": "Mose domanda al Faraone il permesso di lasciare l'Egitto con gli ebrei"
+                    }
+                },
+                {
+                    "targetName": "fresco_004.mind",
+                    "targetIndex": 3,
+                    "title": {
+                        "en": "The Crossing of the Red Sea",
+                        "it": "La traversata del Mar Rosso"
+                    }
+                },
+                {
+                    "targetName": "fresco_005.mind",
+                    "targetIndex": 4,
+                    "title": {
+                        "en": "The Gathering of the Manna",
+                        "it": "La raccolta della manna"
+                    }
+                },
+                {
+                    "targetName": "fresco_006.mind",
+                    "targetIndex": 5,
+                    "title": {
+                        "en": "Moses Makes Water Gush from the Rock",
+                        "it": "Mose fa sgorgare l'acqua dalla roccia"
+                    }
+                },
+                {
+                    "targetName": "fresco_007.mind",
+                    "targetIndex": 6,
+                    "title": {
+                        "en": "The Hebrews Worship the Golden Calf, Moses Descends from Sinai with the Tablets",
+                        "it": "Gli ebrei adorano il vitello d'oro, Mose discende dal Sinai con le Tavole"
+                    }
+                },
+                {
+                    "targetName": "fresco_008.mind",
+                    "targetIndex": 7,
+                    "title": {
+                        "en": "The Bronze Serpent",
+                        "it": "La serpe di bronzo"
+                    }
+                }
+            ]
+        },
+        {
+            "id": "david",
+            "name": {
+                "en": "David Cycle",
+                "it": "Ciclo di Davide"
+            },
+            "targetFile": "david_targets.mind",
+            "frescoes": [
+                {
+                    "targetName": "fresco_009.mind",
+                    "targetIndex": 0,
+                    "title": {
+                        "en": "Samuel with sons of Jesse, among Prophets and Herms",
+                        "it": "Samuele con i figli di Iesse, tra profeti ed erme"
+                    }
+                },
+                {
+                    "targetName": "fresco_010.mind",
+                    "targetIndex": 1,
+                    "title": {
+                        "en": "The Anointing of David",
+                        "it": "Unzione di Davide"
+                    }
+                },
+                {
+                    "targetName": "fresco_011.mind",
+                    "targetIndex": 2,
+                    "title": {
+                        "en": "David Plays for Saul",
+                        "it": "Davide suona per Saul"
+                    }
+                },
+                {
+                    "targetName": "fresco_012.mind",
+                    "targetIndex": 3,
+                    "title": {
+                        "en": "David Puts on the Armour and Kills Goliath, among Prophets and Herms",
+                        "it": "Davide indossa l'armatura e uccide Golia, tra Profeti ed erme"
+                    }
+                },
+                {
+                    "targetName": "fresco_013.mind",
+                    "targetIndex": 4,
+                    "title": {
+                        "en": "The Triumph of David",
+                        "it": "Trionfo di Davide"
+                    }
+                },
+                {
+                    "targetName": "fresco_014.mind",
+                    "targetIndex": 5,
+                    "title": {
+                        "en": "The Marriage of David and Michal",
+                        "it": "Matrimonio di Davide e Micol"
+                    }
+                }
+            ]
+        },
+        {
+            "id": "camilla",
+            "name": {
+                "en": "Camilla Cycle",
+                "it": "Ciclo di Camilla"
+            },
+            "targetFile": "camilla_targets.mind",
+            "frescoes": [
+                {
+                    "targetName": "fresco_015.mind",
+                    "targetIndex": 0,
+                    "title": {
+                        "en": "The Volsci Attack Metabus, Father of Camilla and Tyrant of Privernum, Banished from His City",
+                        "it": "I Volsci assalgono Metabo, padre di Camilla e tiranno di Priverno, bandito dalla sua città"
+                    }
+                },
+                {
+                    "targetName": "fresco_016.mind",
+                    "targetIndex": 1,
+                    "title": {
+                        "en": "Metabus Throws the Spear, to Which He Has Tied His Daughter Camilla, Across the River Amasenus",
+                        "it": "Metabo getta il lanciotto a cui ha legato la figlia Camilla, sull'altra riva del fiume Amaseno"
+                    }
+                },
+                {
+                    "targetName": "fresco_017.mind",
+                    "targetIndex": 2,
+                    "title": {
+                        "en": "Metabus Feeds Camilla with a Mare's Milk",
+                        "it": "Metabo nutre Camilla con il latte di una giumenta"
+                    }
+                },
+                {
+                    "targetName": "fresco_018.mind",
+                    "targetIndex": 3,
+                    "title": {
+                        "en": "Camilla Kills Liris, Pegasus and Ornytus",
+                        "it": "Camilla uccide Liri, Pegaso e Ornito"
+                    }
+                },
+                {
+                    "targetName": "fresco_019.mind",
+                    "targetIndex": 4,
+                    "title": {
+                        "en": "The Amazon Camilla Strikes Orsilochus and Butes Dead",
+                        "it": "L'amazzone Camilla colpisce a morte Orsiloco e Bute"
+                    }
+                },
+                {
+                    "targetName": "fresco_020.mind",
+                    "targetIndex": 5,
+                    "title": {
+                        "en": "Camilla Kills the Son of the Ligurian Aunus",
+                        "it": "Camilla uccide il figlio del ligure Auno"
+                    }
+                },
+                {
+                    "targetName": "fresco_021.mind",
+                    "targetIndex": 6,
+                    "title": {
+                        "en": "The Death of Camilla",
+                        "it": "Morte di Camilla"
+                    }
+                },
+                {
+                    "targetName": "fresco_022.mind",
+                    "targetIndex": 7,
+                    "title": {
+                        "en": "The Lifeless Body of Camilla Is Supported by the Faithful Acca and Another Amazon",
+                        "it": "Il corpo ormai esamine di Camilla viene sorretto dalla fedele Acca e da un'altra amazzone"
+                    }
+                },
+                {
+                    "targetName": "fresco_023.mind",
+                    "targetIndex": 8,
+                    "title": {
+                        "en": "The Virgin Camilla, Sacred to Diana, Is Carried to Heaven with Her Arms",
+                        "it": "La vergine Camilla, sacra a Diana, è trasportata con le armi in cielo"
+                    }
+                }
+            ]
+        }
+    ]
+}
