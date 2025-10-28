@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AR Test - David Room</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.3/dist/mindar-image-aframe.prod.js"></script>
+  <style>
+    html, body { 
+      margin: 0; 
+      padding: 0; 
+      height: 100%; 
+      background: transparent;
+      overflow: hidden;
+    }
+    #status {
+      position: absolute;
+      top: 2rem;
+      left: 2rem;
+      background: rgba(0, 0, 0, 0.8);
+      color: white;
+      padding: 1rem;
+      border-radius: 0.5rem;
+      font-family: Arial, sans-serif;
+      z-index: 100;
+    }
+  </style>
+</head>
+<body>
+  <div id="status">Loading David Room Test...</div>
+  
+  <a-scene
+    mindar-image="imageTargetSrc: david_targets.mind; autoStart: true; showStats: true;"
+    color-space="sRGB"
+    embedded
+    renderer="colorManagement: true, physicallyCorrectLights"
+    vr-mode-ui="enabled: false"
+    device-orientation-permission-ui="enabled: false"
+  >
+    <a-assets></a-assets>
+    <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+    
+    <!-- Test targets for David room -->
+    <a-entity mindar-image-target="targetIndex: 0">
+      <a-text value="David Target 0 - Samuel with sons of Jesse" color="#FFFFFF" align="center" position="0 0 0" scale="0.5 0.5 0.5"></a-text>
+    </a-entity>
+    
+    <a-entity mindar-image-target="targetIndex: 1">
+      <a-text value="David Target 1 - The Anointing of David" color="#FFFFFF" align="center" position="0 0 0" scale="0.5 0.5 0.5"></a-text>
+    </a-entity>
+    
+    <a-entity mindar-image-target="targetIndex: 2">
+      <a-text value="David Target 2 - David Plays for Saul" color="#FFFFFF" align="center" position="0 0 0" scale="0.5 0.5 0.5"></a-text>
+    </a-entity>
+  </a-scene>
+
+  <script>
+    const statusEl = document.getElementById('status');
+    const sceneEl = document.querySelector('a-scene');
+    
+    sceneEl.addEventListener('loaded', () => {
+      console.log('Scene loaded');
+      statusEl.textContent = 'Scene loaded - Initializing AR...';
+    });
+    
+    sceneEl.addEventListener('arReady', () => {
+      console.log('AR Ready');
+      statusEl.textContent = 'AR Ready - Point camera at David frescoes';
+    });
+    
+    sceneEl.addEventListener('arError', (event) => {
+      console.error('AR Error:', event.detail);
+      statusEl.textContent = 'AR Error: ' + event.detail.error;
+    });
+    
+    sceneEl.addEventListener('targetFound', (event) => {
+      console.log('Target found:', event.detail.targetIndex);
+      statusEl.textContent = `Target ${event.detail.targetIndex} detected!`;
+    });
+    
+    sceneEl.addEventListener('targetLost', () => {
+      console.log('Target lost');
+      statusEl.textContent = 'AR Ready - Point camera at David frescoes';
+    });
+  </script>
+</body>
+</html>

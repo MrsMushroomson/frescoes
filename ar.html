@@ -306,34 +306,62 @@
         
         // Stop current AR if running
         if (isARActive && mindARSystem) {
-          await mindARSystem.stop();
+          try {
+            await mindARSystem.stop();
+            console.log('Stopped previous AR system');
+          } catch (e) {
+            console.log('Error stopping AR:', e);
+          }
           isARActive = false;
         }
         
         currentRoom = roomId;
         
+        // Wait a moment for cleanup
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
         // Update MindAR system with new target file
-        sceneEl.setAttribute('mindar-image', `imageTargetSrc: ${roomData.targetFile}; autoStart: false;`);
+        console.log(`Loading target file: ${roomData.targetFile}`);
+        sceneEl.setAttribute('mindar-image', `imageTargetSrc: ${roomData.targetFile}; autoStart: false; showStats: true;`);
         
         // Create new AR targets
         createARTargets();
         
-        // Initialize MindAR system
+        // Wait for MindAR system to be available
+        let attempts = 0;
+        const maxAttempts = 20;
+        
+        while (!sceneEl.systems['mindar-image-system'] && attempts < maxAttempts) {
+          await new Promise(resolve => setTimeout(resolve, 100));
+          attempts++;
+        }
+        
+        if (attempts >= maxAttempts) {
+          throw new Error('MindAR system not available after waiting');
+        }
+        
         mindARSystem = sceneEl.systems['mindar-image-system'];
         
-        // Start AR
-        await mindARSystem.start();
+        // Check if autoStart worked, if not start manually
+        if (!mindARSystem.arSystem) {
+          console.log('Starting AR manually...');
+          await mindARSystem.start();
+        }
+        
         isARActive = true;
         
-        loadingEl.style.display = 'none';
-        roomStatus.textContent = `AR Active: ${roomData.name[currentLanguage]}`;
+        // Hide loading after a delay to ensure AR is fully loaded
+        setTimeout(() => {
+          loadingEl.style.display = 'none';
+          roomStatus.textContent = `AR Active: ${roomData.name[currentLanguage]}`;
+        }, 2000);
         
         console.log(`AR started for room: ${roomData.name[currentLanguage]}`);
         
       } catch (error) {
         console.error('Error starting AR:', error);
         loadingEl.style.display = 'none';
-        roomStatus.textContent = 'Error starting AR';
+        roomStatus.textContent = `Error: ${error.message}`;
       }
     }
 
@@ -342,12 +370,26 @@
       const selectedRoom = event.target.value;
       
       if (selectedRoom) {
-        await startARForRoom(selectedRoom);
+        console.log('Selected room:', selectedRoom);
+        roomSelector.disabled = true; // Prevent multiple clicks during loading
+        
+        try {
+          await startARForRoom(selectedRoom);
+        } catch (error) {
+          console.error('Failed to start room:', error);
+          roomStatus.textContent = 'Failed to load room';
+        } finally {
+          roomSelector.disabled = false;
+        }
       } else {
         // Stop AR if no room selected
         if (isARActive && mindARSystem) {
-          await mindARSystem.stop();
-          isARActive = false;
+          try {
+            await mindARSystem.stop();
+            isARActive = false;
+          } catch (e) {
+            console.log('Error stopping AR:', e);
+          }
         }
         currentRoom = null;
         roomStatus.textContent = 'Select a room to start AR';
@@ -411,6 +453,18 @@
       console.log('A-Frame scene loaded');
     });
 
+    // MindAR specific events
+    sceneEl.addEventListener('arReady', () => {
+      console.log('MindAR is ready');
+      loadingEl.style.display = 'none';
+    });
+
+    sceneEl.addEventListener('arError', (event) => {
+      console.error('MindAR error:', event.detail);
+      loadingEl.style.display = 'none';
+      roomStatus.textContent = 'AR Error - Please try again';
+    });
+
     // Listen for MindAR events to show the label
     sceneEl.addEventListener('targetFound', (event) => {
       console.log('Target found:', event.detail.targetIndex);
@@ -421,6 +475,9 @@
         labelEl.textContent = title;
         labelEl.dataset.targetIndex = targetIndex; // Store current target index
         labelEl.style.opacity = 1;
+        console.log('Showing title:', title);
+      } else {
+        console.log('No title found for target index:', targetIndex);
       }
     });
     
